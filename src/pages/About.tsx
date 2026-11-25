@@ -1,6 +1,6 @@
 import { ArrowUpRight, Database, Github, Heart } from "lucide-react";
 import { useAtlas } from "../atlas/context";
-import { REPO_URL, UPSTREAM_REPO_URL } from "../config";
+import { REPO_URL } from "../config";
 import { useStore } from "../store/store";
 import { GRADE_LABELS } from "../grades";
 
@@ -27,8 +27,8 @@ export function About() {
             <a className="btn btn-ghost" href={REPO_URL} target="_blank" rel="noreferrer">
               <Github size={18} /> 查看本项目源码
             </a>
-            <a className="btn btn-ghost" href={UPSTREAM_REPO_URL} target="_blank" rel="noreferrer">
-              <ArrowUpRight size={18} /> 素材来源 Word Atlas
+            <a className="btn btn-ghost" href={REPO_URL} target="_blank" rel="noreferrer">
+              <ArrowUpRight size={18} /> 素材来源与署名
             </a>
           </div>
         </div>
@@ -111,8 +111,8 @@ export function About() {
               阅读本项目 README <ArrowUpRight size={14} />
             </a>
             {" · "}
-            <a className="link" href={`${UPSTREAM_REPO_URL}#readme`} target="_blank" rel="noreferrer">
-              上游 Word Atlas 文档 <ArrowUpRight size={14} />
+            <a className="link" href={`${REPO_URL}/blob/main/CONTENT_LICENSE.md`} target="_blank" rel="noreferrer">
+              内容许可原文 <ArrowUpRight size={14} />
             </a>
           </p>
         </section>
