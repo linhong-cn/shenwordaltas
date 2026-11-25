@@ -677,8 +677,8 @@ code {
   left: 0;
   right: 0;
   bottom: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  align-items: stretch;
   padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
   background: color-mix(in oklab, var(--paper) 86%, transparent);
   backdrop-filter: saturate(1.4) blur(18px);
@@ -686,14 +686,18 @@ code {
   border-top: 1px solid var(--line);
 }
 .tabbar a {
+  flex: 1 1 0;
+  min-width: 0;
   display: grid;
   justify-items: center;
+  align-content: center;
   gap: 2px;
   padding: 6px 0 4px;
   font-size: 11px;
   font-weight: 600;
   color: var(--ink-3);
   border-radius: 14px;
+  white-space: nowrap;
   transition: color 0.2s;
 }
 .tabbar a.is-on {
