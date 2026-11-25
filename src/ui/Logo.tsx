@@ -1,5 +1,5 @@
 import { useStore } from "../store/store";
-import { GRADE_LABELS } from "../grades";
+import { GRADE_SHORT } from "../grades";
 
 export function Mark({ size = 28 }: { size?: number }) {
   return (
@@ -23,7 +23,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
       <Mark />
       <span className="logo-text">
         <b>深词光</b>
-        {!compact && <small>{GRADE_LABELS[grade]}</small>}
+        {!compact && <small>{GRADE_SHORT[grade]}</small>}
       </span>
     </span>
   );

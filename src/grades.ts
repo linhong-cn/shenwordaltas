@@ -11,13 +11,14 @@ export const GRADE_LABELS: Record<Grade, string> = {
   6: "六年级",
 };
 
+/** 顶栏与筛选器用的短标签，减少占用宽度；说明文案与分享卡片水印仍用全称。 */
 export const GRADE_SHORT: Record<Grade, string> = {
-  1: "一下起步",
-  2: "二年级",
-  3: "三年级",
-  4: "四年级",
-  5: "五年级",
-  6: "六年级",
+  1: "小一",
+  2: "小二",
+  3: "小三",
+  4: "小四",
+  5: "小五",
+  6: "小六",
 };
 
 export const DEFAULT_GRADE: Grade = 6;

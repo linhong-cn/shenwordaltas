@@ -1,10 +1,23 @@
 import type { Atlas, Entry } from "../atlas/types";
 import { store } from "../store/store";
 import { GRADE_LABELS, type Grade } from "../grades";
+import { REPO_URL } from "../config";
 import { toast } from "./Toast";
 
 const SERIF = '"Fraunces Variable", "Songti SC", "Noto Serif SC", Georgia, serif';
 const SANS = '-apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif';
+
+export const CARD_W = 1080;
+export const CARD_H = 1440;
+const CARD_PAD = 72;
+export const SOURCE_TEXT = `源: ${REPO_URL}`;
+
+/** 卡片右下角「源」文字的矩形（1080×1440 坐标系），供点击热区复用。 */
+export function sourceRect(ctx: CanvasRenderingContext2D) {
+  ctx.font = `400 22px ${SANS}`;
+  const w = ctx.measureText(SOURCE_TEXT).width;
+  return { x: CARD_W - CARD_PAD - w, y: CARD_H - 50 - 26, w, h: 34 };
+}
 
 function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -41,8 +54,8 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 }
 
 export async function renderWordCard(atlas: Atlas, e: Entry, grade?: Grade) {
-  const W = 1080;
-  const H = 1440;
+  const W = CARD_W;
+  const H = CARD_H;
   const c = document.createElement("canvas");
   c.width = W;
   c.height = H;
@@ -51,7 +64,7 @@ export async function renderWordCard(atlas: Atlas, e: Entry, grade?: Grade) {
 
   ctx.fillStyle = "#F3ECDF";
   ctx.fillRect(0, 0, W, H);
-  const pad = 72;
+  const pad = CARD_PAD;
   const art = W - pad * 2;
   const imgSrc = atlas.img(e);
   ctx.save();
@@ -115,8 +128,8 @@ export async function renderWordCard(atlas: Atlas, e: Entry, grade?: Grade) {
   ctx.fillText(tag, W - pad - ctx.measureText(tag).width, H - 96);
   ctx.font = `400 22px ${SANS}`;
   ctx.fillStyle = "#8A8D98";
-  const src = "源: https://github.com/linhong-cn/shenwordaltas";
-  ctx.fillText(src, W - pad - ctx.measureText(src).width, H - 50);
+  const sr = sourceRect(ctx);
+  ctx.fillText(SOURCE_TEXT, sr.x, H - 50);
   return c;
 }
 

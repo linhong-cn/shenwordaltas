@@ -1,4 +1,4 @@
-import { BookOpen, ChevronLeft, ChevronRight, Compass, Github, Images, Keyboard, Moon, Search, Sun, User } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, Compass, Github, Heart, Images, Keyboard, Moon, Search, Sun, User } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { AtlasContext, useAtlas, useEntry } from "./atlas/context";
 import { loadOpenAtlas, loadPrivateAtlas } from "./atlas/data";
@@ -194,7 +194,10 @@ function Shell({ privateAvailable, grade, onGradeChange }: { privateAvailable: b
             <a href={REPO_URL} target="_blank" rel="noreferrer">
               GitHub
             </a>{" "}
-            · <a href="#/about">关于</a> · <a href="#/support">打赏</a>
+            · <a href="#/about">关于</a> ·{" "}
+            <a className="footer-support" href="#/support">
+              <Heart size={14} fill="currentColor" /> 打赏支持
+            </a>
           </p>
         </footer>
       )}

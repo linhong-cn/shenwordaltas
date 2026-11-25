@@ -30,7 +30,7 @@ export function Support() {
     <div className="page support">
       <header className="page-head">
         <p className="eyebrow">支持</p>
-        <h1 className="display">喜欢深词光，就请我喝杯茶吧。</h1>
+        <h1 className="display">喜欢深词光，就<span className="support-accent">请我喝杯茶吧</span>。</h1>
         <p className="lede">
           深词光免费、无广告、不收集任何学习数据。如果这些单词卡片帮到了孩子，欢迎用微信扫一扫下面的赞赏码，金额随意。你的支持会用于素材整理和后续更新。
         </p>

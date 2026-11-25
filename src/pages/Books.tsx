@@ -1,11 +1,12 @@
-import { ChevronLeft, ChevronRight, Download, Images, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Download, ExternalLink, Images, Maximize2, Minimize2, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject, type TouchEvent as ReactTouchEvent } from "react";
 import { loadOpenAtlas } from "../atlas/data";
 import type { Atlas, Entry } from "../atlas/types";
-import { GRADE_LABELS, GRADES, gradeAtlasPath, type Grade } from "../grades";
+import { REPO_URL } from "../config";
+import { GRADE_LABELS, GRADE_SHORT, GRADES, gradeAtlasPath, type Grade } from "../grades";
 import { go, type Route } from "../lib/router";
 import { useStore } from "../store/store";
-import { renderWordCard } from "../ui/share";
+import { CARD_H, CARD_W, renderWordCard, sourceRect } from "../ui/share";
 import { toast } from "../ui/Toast";
 
 type RouteBooks = Extract<Route, { page: "books" }>;
@@ -19,6 +20,45 @@ function locate(g: Grade, id: string): { part: Part; unit: number } {
 }
 
 const PARTS: Part[] = ["上", "下"];
+
+/**
+ * 计算卡片右下角「源」文字在屏幕上的可点击区域。
+ * canvas 可能用 object-fit: contain 居中缩放，所以要先还原缩放与留白偏移。
+ */
+function useSourceHit(ref: RefObject<HTMLCanvasElement | null>, active: boolean, key: string) {
+  const [hit, setHit] = useState<CSSProperties | null>(null);
+  useEffect(() => {
+    if (!active) {
+      setHit(null);
+      return;
+    }
+    const c = ref.current;
+    if (!c) return;
+    const calc = () => {
+      const cw = c.clientWidth;
+      const ch = c.clientHeight;
+      if (!cw || !ch) return;
+      const scale = Math.min(cw / CARD_W, ch / CARD_H);
+      const offX = (cw - CARD_W * scale) / 2;
+      const offY = (ch - CARD_H * scale) / 2;
+      const measure = document.createElement("canvas").getContext("2d");
+      if (!measure) return;
+      const r = sourceRect(measure);
+      const m = 10;
+      setHit({
+        left: offX + (r.x - m) * scale,
+        top: offY + (r.y - m) * scale,
+        width: (r.w + m * 2) * scale,
+        height: (r.h + m * 2) * scale,
+      });
+    };
+    calc();
+    const ro = new ResizeObserver(calc);
+    ro.observe(c);
+    return () => ro.disconnect();
+  }, [ref, active, key]);
+  return hit;
+}
 
 export function BooksPage({ route }: { route: RouteBooks }) {
   const learnGrade = useStore((s) => s.settings.grade);
@@ -59,8 +99,10 @@ export function BooksPage({ route }: { route: RouteBooks }) {
   const switchUnit = (u: number) => update({ unit: u, index: 0 });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fullCanvasRef = useRef<HTMLCanvasElement>(null);
   const [entry, setEntry] = useState<Entry | null>(null);
   const [rendering, setRendering] = useState(false);
+  const [full, setFull] = useState(false);
   useEffect(() => {
     let live = true;
     setEntry(null);
@@ -88,22 +130,77 @@ export function BooksPage({ route }: { route: RouteBooks }) {
     };
   }, [atlas, entry, grade]);
 
+  const hitKey = `${word?.id ?? ""}-${rendering}`;
+  const hit = useSourceHit(canvasRef, !!word && !rendering, hitKey);
+  const fullHit = useSourceHit(fullCanvasRef, full && !!word && !rendering, `full-${hitKey}`);
+
+  // 全屏画布复用主画布像素，避免重复绘制插画
+  useEffect(() => {
+    if (!full || rendering) return;
+    const src = canvasRef.current;
+    const dst = fullCanvasRef.current;
+    if (!src || !dst || !src.width) return;
+    dst.width = src.width;
+    dst.height = src.height;
+    dst.getContext("2d")?.drawImage(src, 0, 0);
+  }, [full, rendering, word?.id, grade]);
+
   const move = useCallback((d: number) => {
     const next = pos + d;
     if (next < 0 || next >= words.length) return;
     update({ index: next });
   }, [pos, words.length, update]);
 
+  const exitFull = useCallback(() => {
+    setFull(false);
+    try {
+      if (document.fullscreenElement) void document.exitFullscreen?.()?.catch(() => null);
+    } catch { /* 忽略：不支持原生全屏时自定义全屏层仍可用 */ }
+  }, []);
+  const enterFull = () => {
+    setFull(true);
+    try {
+      const p = document.documentElement.requestFullscreen?.();
+      void p?.catch(() => null);
+    } catch { /* iOS Safari 不支持时仅使用自定义全屏层 */ }
+  };
+
   useEffect(() => {
     const on = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") move(-1);
       else if (e.key === "ArrowRight") move(1);
+      else if (e.key === "Escape") exitFull();
     };
     window.addEventListener("keydown", on);
     return () => window.removeEventListener("keydown", on);
-  }, [move]);
+  }, [move, exitFull]);
+
+  // 全屏时锁定背景滚动，并在原生全屏被系统退出时同步关闭
+  useEffect(() => {
+    if (!full) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onFs = () => {
+      if (!document.fullscreenElement) setFull(false);
+    };
+    document.addEventListener("fullscreenchange", onFs);
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener("fullscreenchange", onFs);
+    };
+  }, [full]);
 
   const touchX = useRef<number | null>(null);
+  const swipe = {
+    onTouchStart: (e: ReactTouchEvent) => (touchX.current = e.touches[0].clientX),
+    onTouchEnd: (e: ReactTouchEvent) => {
+      if (touchX.current === null) return;
+      const dx = e.changedTouches[0].clientX - touchX.current;
+      if (Math.abs(dx) > 48) move(dx > 0 ? -1 : 1);
+      touchX.current = null;
+    },
+  };
+
   const save = async () => {
     if (!atlas || !word || !canvasRef.current) return;
     try {
@@ -140,7 +237,7 @@ export function BooksPage({ route }: { route: RouteBooks }) {
             <span className="books-label">年级</span>
             <div className="books-chips">
               {GRADES.map((g) => (
-                <button key={g} className={g === grade ? "is-on" : ""} onClick={() => switchGrade(g)}>{GRADE_LABELS[g]}</button>
+                <button key={g} className={g === grade ? "is-on" : ""} onClick={() => switchGrade(g)}>{GRADE_SHORT[g]}</button>
               ))}
             </div>
           </div>
@@ -148,7 +245,7 @@ export function BooksPage({ route }: { route: RouteBooks }) {
             <span className="books-label">册别</span>
             <div className="books-chips">
               {PARTS.map((p) => (
-                <button key={p} className={p === part ? "is-on" : ""} onClick={() => switchPart(p)}>{GRADE_LABELS[grade]}{p}册</button>
+                <button key={p} className={p === part ? "is-on" : ""} onClick={() => switchPart(p)}>{GRADE_SHORT[grade]}{p}册</button>
               ))}
             </div>
           </div>
@@ -172,14 +269,12 @@ export function BooksPage({ route }: { route: RouteBooks }) {
         <>
           <div className="books-stage">
             <button className="books-nav" onClick={() => move(-1)} disabled={pos === 0} aria-label="上一张"><ChevronLeft size={28} /></button>
-            <div className="books-card" onTouchStart={(e) => (touchX.current = e.touches[0].clientX)} onTouchEnd={(e) => {
-              if (touchX.current === null) return;
-              const dx = e.changedTouches[0].clientX - touchX.current;
-              if (Math.abs(dx) > 48) move(dx > 0 ? -1 : 1);
-              touchX.current = null;
-            }}>
+            <div className="books-card" {...swipe}>
               {rendering && <span className="spinner" />}
-              <canvas ref={canvasRef} className={rendering ? "is-loading" : ""} aria-label={`${word.word} 卡片`} />
+              <div className="books-canvas-wrap">
+                <canvas ref={canvasRef} className={rendering ? "is-loading" : ""} aria-label={`${word.word} 卡片`} />
+                {hit && <a className="books-source-hit" style={hit} href={REPO_URL} target="_blank" rel="noreferrer" title={`打开项目主页 ${REPO_URL}`} aria-label="打开来源项目主页" />}
+              </div>
             </div>
             <button className="books-nav" onClick={() => move(1)} disabled={pos >= words.length - 1} aria-label="下一张"><ChevronRight size={28} /></button>
           </div>
@@ -187,6 +282,7 @@ export function BooksPage({ route }: { route: RouteBooks }) {
             <span>{pos + 1} / {words.length} · {GRADE_LABELS[grade]}{part}册 Unit {activeUnit}</span>
             <span className="books-word">{word.word}</span>
             <div className="books-actions">
+              <button className="btn" onClick={enterFull}><Maximize2 size={16} /> 全屏查看</button>
               <button className="btn" onClick={save}><Download size={16} /> 保存卡片</button>
               <button className="btn" onClick={() => update({ index: 0 })}><X size={16} /> 回到开头</button>
             </div>
@@ -198,10 +294,38 @@ export function BooksPage({ route }: { route: RouteBooks }) {
               </button>
             ))}
           </div>
-          <p className="books-note">卡片按词库插画实时绘制，右下角标注来源；数据目录 {gradeAtlasPath(grade)}</p>
+          <p className="books-note">
+            卡片按词库插画实时绘制。右下角「源」可点击打开项目主页，也可以直接访问{" "}
+            <a href={REPO_URL} target="_blank" rel="noreferrer">{REPO_URL} <ExternalLink size={11} /></a>；数据目录 {gradeAtlasPath(grade)}。
+          </p>
         </>
+      )}
+
+      {full && word && (
+        <div className="books-full" role="dialog" aria-modal="true" aria-label="绘本全屏查看">
+          <div className="books-full-bar">
+            <button className="books-full-btn" onClick={exitFull} aria-label="退出全屏"><Minimize2 size={20} /></button>
+            <span className="books-full-meta">
+              {GRADE_SHORT[grade]}{part}册 · Unit {activeUnit} · {pos + 1} / {words.length} · <b>{word.word}</b>
+            </span>
+            <a className="books-full-link" href={REPO_URL} target="_blank" rel="noreferrer">
+              源 · 项目主页 <ExternalLink size={14} />
+            </a>
+          </div>
+          <div className="books-full-stage" {...swipe}>
+            <button className="books-full-nav" onClick={() => move(-1)} disabled={pos === 0} aria-label="上一张"><ChevronLeft size={30} /></button>
+            <div className="books-full-canvas-wrap">
+              <canvas ref={fullCanvasRef} className={rendering ? "is-loading" : ""} aria-label={`${word.word} 卡片全屏`} />
+              {fullHit && <a className="books-source-hit" style={fullHit} href={REPO_URL} target="_blank" rel="noreferrer" title={`打开项目主页 ${REPO_URL}`} aria-label="打开来源项目主页" />}
+            </div>
+            <button className="books-full-nav" onClick={() => move(1)} disabled={pos >= words.length - 1} aria-label="下一张"><ChevronRight size={30} /></button>
+          </div>
+          <div className="books-full-foot">
+            <span>← → 翻页 · 左右滑动切换 · Esc 退出</span>
+            <button className="books-full-save" onClick={save}><Download size={14} /> 保存卡片</button>
+          </div>
+        </div>
       )}
     </section>
   );
 }
-
