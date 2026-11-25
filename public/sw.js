@@ -1,5 +1,5 @@
 /* Grade 1-6 Atlas offline cache: app shell network-first, everything else cache-first. */
-const VERSION = "atlas-g1to6-v5";
+const VERSION = "atlas-g1to6-v6";
 const SHELL = `${VERSION}-shell`;
 const MEDIA = `${VERSION}-media`;
 

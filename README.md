@@ -10,6 +10,7 @@
 - 上游仓库：<https://github.com/designfuchen/word-atlas>（素材来源，署名链接按 CC BY 4.0 保留）
 - 上游在线版：<https://0xlei.tech/words/>
 - **绘本相册（直达）**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/books>（选年级、册别、单元后翻看绘本卡片）
+- **打赏支持（直达）**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/support>（微信赞赏码；二维码图片需先放到 `public/support/wechat-reward.jpg`）
 - 当前应用：React + Vite + TypeScript，纯静态 PWA，可打包为 Capacitor iOS 工程
 
 ---
@@ -45,6 +46,7 @@
 6. **iOS 与构建**：`vite.config.ts` 使用相对 `base`，保证 Capacitor 本地 scheme 下可加载；新增 `ios/` Capacitor 8 工程。
 7. **去除上游考试相关表述**：应用文案、词条说明与语音中的相关措辞已替换为「深圳小学英语」，代码中的类名/注释也一并中性化；`CONTENT_LICENSE.md` 的法律声明按许可要求保留原文。
 8. **绘本相册**：新增 `#/books` 页面，按年级、上/下册、单元翻看一词一画卡片；六个年级共 1,880 张卡片图片另存于 `../深词光绘本图片/`，每张右下角标注本项目仓库来源。相册页卡片由词库插画实时绘制，不额外增加 App 体积。
+9. **打赏支持**：新增 `#/support` 页面，展示微信赞赏码（静态图片，不接支付 SDK、无需后端）；赞赏完全自愿，不解锁任何功能。二维码图片放在 `public/support/wechat-reward.jpg`，未放置时页面显示「即将上线」占位。微信赞赏码须由收款人本人实名认证并绑定中国大陆银行卡后开通，单笔上限 200 元，仅限个人非商业性赞赏；如将来提交 App Store，需按审核指南 3.1.1 移除外部打赏入口或改走应用内购买。
 
 词表与素材的原始汇总资料（词表 Markdown、图片、音频、匹配报告）位于同级上级目录 `../小学六年级英语单词/`。
 
@@ -75,7 +77,7 @@ shenwordaltas/
 │  ├─ grades.ts               年级列表、标签、默认年级、datasetId
 │  ├─ atlas/data.ts           按年级加载词库与媒体路径
 │  ├─ store/                  localStorage 设置、进度、FSRS、备份导入导出
-│  ├─ pages/                  Today / Atlas / Books（绘本相册）/ Learn / Practice / Me / About
+│  ├─ pages/                  Today / Atlas / Books（绘本相册）/ Learn / Practice / Me / About / Support（打赏）
 │  ├─ ui/                     GradePicker、Splash、EntryView、分享图等
 │  ├─ galaxy/                 星图布局与配色
 │  └─ styles/app.css          全部样式
@@ -124,7 +126,7 @@ npm install
 
 1. 启动页点击屏幕或按任意键进入（会播放欢迎语音，需用户手势才允许发声）。
 2. 顶栏下拉切换一年级至六年级，**默认六年级**；各年级学习进度互相独立。
-3. 页面为 hash 路由：`#/`（今日）、`#/atlas`（词汇图鉴）、`#/books`（绘本相册）、`#/learn`、`#/practice`、`#/me`、`#/about`。
+3. 页面为 hash 路由：`#/`（今日）、`#/atlas`（词汇图鉴）、`#/books`（绘本相册）、`#/learn`、`#/practice`、`#/me`、`#/about`、`#/support`（打赏支持）。
 4. 词条详情可看插画、音标、释义、例句、搭配与词族，播放英音/美音及例句音频。
 5. **绘本相册**：导航「绘本」或打开 `#/books`，先选年级（1–6，独立于学习年级）、上/下册、单元，再用左右按钮、键盘方向键或手机左右滑动翻页；点下方编号可跳到指定卡片，「保存卡片」导出 JPEG。链接可带参数分享，例如 `#/books?grade=1&part=上&unit=3&index=5`。
 6. 设置里可开关音效、环境音、主题，导出/导入学习备份。进度保存在浏览器 `localStorage`：`grade6-atlas:settings` 与 `grade6-atlas:v2:{datasetId}`（`datasetId` 形如 `grade6-atlas`）。
@@ -134,7 +136,7 @@ npm install
 
 - 新增或替换某年级素材时，保持 `public/atlas/gN/` 下的目录结构与 `index.json` 的 `count`、`illustrated`、`voiced`、`chunk`、`words` 一致；`entries/` 按 `chunk`（100）分片命名 `{n}.json`。
 - 媒体文件以词条 `id` 命名；缺失插画或音频时应用会自动留空，不必放占位文件。
-- **改过任何静态资源后，把 `public/sw.js` 的 `VERSION` 升一级**（当前 `atlas-g1to6-v5`）。Service Worker 对音效等资源是缓存优先的，不升版本时已安装 PWA 仍会拿旧文件；JS/CSS 因构建带内容哈希可例外，但按统一约定仍建议升级。
+- **改过任何静态资源后，把 `public/sw.js` 的 `VERSION` 升一级**（当前 `atlas-g1to6-v6`）。Service Worker 对音效等资源是缓存优先的，不升版本时已安装 PWA 仍会拿旧文件；JS/CSS 因构建带内容哈希可例外，但按统一约定仍建议升级。
 - 词条说明里的中性措辞为「参考词库词条」「未匹配到词库插画」，不要再写回上游品牌名。
 
 ### 5.5 iOS 工程
@@ -148,6 +150,7 @@ npm install
 
 - **当前分享链接**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK>（含访问码，请勿公开转发）。
 - **绘本相册直达链接**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/books>（进入后选年级、册别、单元即可翻页）。可带参数定位到具体卡片，例如 `#/books?grade=6&part=下&unit=2&index=0`。注意 `sharecode` 是站点访问码，必须保留在 query 中；`#/books` 及其参数是应用内部路由。
+- **打赏支持页**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/support>。入口在「关于」页和页脚；展示 `public/support/wechat-reward.jpg`，图片不存在时显示占位，需自行开通微信赞赏码并把图片放入该路径后重新构建发布。
 - **发布源目录与项目构建产物是分开的**：线上应用绑定在 `/Users/hong/WorkBuddy/sz-grade-atlas-workspace/dist`，不是项目的 `dist/`。每次 `npm run build` 后需先同步，再从该目录发布：
 
   ```bash
@@ -158,7 +161,7 @@ npm install
   直接从 `shenwordaltas/dist` 发布会命中旧应用标记，把已下线的旧域名重新上线，务必注意。
 - **旧应用**：<https://grade6-atlas.app.workbuddy.host/?sharecode=XIC7P5V6DM> 已手动停止发布（404）。其本地标记 `.wbapp_u3My0aQoq4Vb62HT85nibn.genie` 仍保留在工作区根，便于后续恢复或删除；新应用标记为 `.wbapp_tL21RQKTwiUofW1buoZ3N6.genie`。
 - **域名机制**：域名在应用**首次创建**时按 `domainPrefix` 分配，之后绑定在 sandbox 上；覆盖发布、换发布目录、单纯下线重发都不会改域名。本次成功换域名的做法是：先停止发布旧应用 → 临时移开工作区内的 `.*.genie` 与 `.workbuddy/applications.yaml` → 用全新目录作为发布源重新发布，平台才走「首次创建」流程，分配 `sz-grade-atlas` 与新访问码。
-- 每次发布后建议核对：首页标题、`assets/index-*.js` 哈希、`atlas/g1..g6/index.json` 返回 `application/json`、`sw.js` 版本与 `sfx/splash-voice.mp3`；绘本相册需再核对 bundle 内含「绘本相册」与来源水印、`#/books?grade=1&part=上&unit=1` 可渲染卡片。线上资源需带 `?sharecode=...` 访问，否则返回 403。
+- 每次发布后建议核对：首页标题、`assets/index-*.js` 哈希、`atlas/g1..g6/index.json` 返回 `application/json`、`sw.js` 版本与 `sfx/splash-voice.mp3`；绘本相册需再核对 bundle 内含「绘本相册」与来源水印、`#/books?grade=1&part=上&unit=1` 可渲染卡片；打赏页核对 `#/support` 可打开、赞赏码图片可访问。线上资源需带 `?sharecode=...` 访问，否则返回 403。
 - 在「设置—数据管理—应用」中停止发布后，链接会返回 404「链接已失效」，重新发布即可恢复，地址与访问码不变。
 
 ### 5.7 源码仓库与提交

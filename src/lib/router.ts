@@ -8,7 +8,8 @@ export type Route =
   | { page: "practice" }
   | { page: "books"; grade?: number; part?: string; unit?: number; index?: number }
   | { page: "me" }
-  | { page: "about" };
+  | { page: "about" }
+  | { page: "support" };
 
 export interface Location {
   route: Route;
@@ -36,6 +37,7 @@ function parse(hash: string): Location {
     };
   else if (seg[0] === "me") route = { page: "me" };
   else if (seg[0] === "about") route = { page: "about" };
+  else if (seg[0] === "support") route = { page: "support" };
   else if (seg[0] === "w" && seg[1]) return { route: { page: "atlas" }, word: decodeURIComponent(seg[1]) };
   return { route, word };
 }

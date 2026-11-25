@@ -14,6 +14,7 @@ import { Learn } from "./pages/Learn";
 import { Me } from "./pages/Me";
 import { Onboarding } from "./pages/Onboarding";
 import { Practice } from "./pages/Practice";
+import { Support } from "./pages/Support";
 import { Today } from "./pages/Today";
 import { cue } from "./lib/sound";
 import { store, useStore } from "./store/store";
@@ -182,6 +183,7 @@ function Shell({ privateAvailable, grade, onGradeChange }: { privateAvailable: b
         {route.page === "practice" && <Practice />}
         {route.page === "me" && <Me privateAvailable={privateAvailable} />}
         {route.page === "about" && <About />}
+        {route.page === "support" && <Support />}
       </main>
 
       {!focus && (
@@ -192,7 +194,7 @@ function Shell({ privateAvailable, grade, onGradeChange }: { privateAvailable: b
             <a href={REPO_URL} target="_blank" rel="noreferrer">
               GitHub
             </a>{" "}
-            · <a href="#/about">关于</a>
+            · <a href="#/about">关于</a> · <a href="#/support">打赏</a>
           </p>
         </footer>
       )}

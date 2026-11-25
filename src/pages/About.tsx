@@ -30,6 +30,9 @@ export function About() {
             <a className="btn btn-ghost" href={REPO_URL} target="_blank" rel="noreferrer">
               <ArrowUpRight size={18} /> 素材来源与署名
             </a>
+            <a className="btn btn-ghost" href="#/support">
+              <Heart size={18} /> 打赏支持
+            </a>
           </div>
         </div>
       </header>
