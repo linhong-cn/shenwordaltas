@@ -1,0 +1,38 @@
+{
+  "name": "grade6-atlas",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Illustrated English vocabulary atlas for Shenzhen primaries, grades 1-6 (default 6), with UK/US audio, examples and spaced repetition.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --import tsx --test src/**/*.test.ts",
+    "ios:add": "cap add ios",
+    "ios:sync": "cap sync ios",
+    "ios:build": "npm run build && cap sync ios",
+    "format": "prettier --write src vite.config.ts package.json tsconfig.json"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/ios": "^8.6.2",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "ts-fsrs": "^5.4.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vite": "^6.4.1"
+  },
+  "private": true,
+  "license": "MIT"
+}
