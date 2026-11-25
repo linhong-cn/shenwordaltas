@@ -1,22 +1,30 @@
 import { Download, ExternalLink, Github, Heart, QrCode } from "lucide-react";
 import { useEffect, useState } from "react";
-import { REPO_URL } from "../config";
+import { CHARITY_DESC, CHARITY_LABEL, CHARITY_URL, REPO_URL } from "../config";
 
 const QR_URL = `${import.meta.env.BASE_URL}support/wechat-reward.jpg`;
+const CHARITY_QR_URL = `${import.meta.env.BASE_URL}support/charity-qr.jpg`;
 
-export function Support() {
-  const [status, setStatus] = useState<"loading" | "ready" | "missing">("loading");
+type ImageStatus = "loading" | "ready" | "missing";
 
+function useImageStatus(url: string): ImageStatus {
+  const [status, setStatus] = useState<ImageStatus>("loading");
   useEffect(() => {
     const img = new Image();
     img.onload = () => setStatus("ready");
     img.onerror = () => setStatus("missing");
-    img.src = QR_URL;
+    img.src = url;
     return () => {
       img.onload = null;
       img.onerror = null;
     };
-  }, []);
+  }, [url]);
+  return status;
+}
+
+export function Support() {
+  const reward = useImageStatus(QR_URL);
+  const charityQr = useImageStatus(CHARITY_QR_URL);
 
   return (
     <div className="page support">
@@ -32,10 +40,10 @@ export function Support() {
         <section className="panel support-qr">
           <div className="support-qr-title">
             <QrCode size={18} />
-            <h3>微信赞赏码</h3>
+            <h3>支持开发者 · 微信赞赏码</h3>
           </div>
 
-          {status === "ready" ? (
+          {reward === "ready" ? (
             <>
               <a className="support-qr-image" href={QR_URL} target="_blank" rel="noreferrer" aria-label="查看微信赞赏码大图">
                 <img src={QR_URL} alt="微信赞赏码，用微信扫一扫即可赞赏" />
@@ -45,7 +53,7 @@ export function Support() {
                 <Download size={16} /> 保存赞赏码图片
               </a>
             </>
-          ) : status === "loading" ? (
+          ) : reward === "loading" ? (
             <div className="support-placeholder">
               <span className="spinner" />
               <p>正在加载赞赏码…</p>
@@ -75,6 +83,9 @@ export function Support() {
               <b>记录由微信保存。</b>收款明细在微信「赞赏码 → 赞赏记录」中查看；本应用不接触、也不保存任何支付信息。
             </li>
             <li>
+              <b>公益入口独立。</b>下面的公益链接与赞赏互不挂钩，本应用不代收善款，也不从赞赏金额中抽成。
+            </li>
+            <li>
               <b>其他支持方式。</b>在 GitHub 上点 Star、反馈问题或分享给需要的朋友，都同样有帮助。
             </li>
           </ul>
@@ -83,6 +94,32 @@ export function Support() {
           </a>
         </section>
       </div>
+
+      <section className="panel support-charity">
+        <div className="support-charity-head">
+          <Heart size={18} />
+          <h3>也想直接支持公益？</h3>
+        </div>
+        <p className="muted">{CHARITY_DESC}</p>
+
+        {CHARITY_URL ? (
+          <a className="btn btn-primary" href={CHARITY_URL} target="_blank" rel="noreferrer">
+            {CHARITY_LABEL} <ExternalLink size={16} />
+          </a>
+        ) : charityQr === "ready" ? (
+          <>
+            <a className="support-charity-qr" href={CHARITY_QR_URL} target="_blank" rel="noreferrer" aria-label="查看公益项目二维码大图">
+              <img src={CHARITY_QR_URL} alt="腾讯公益项目二维码，用微信扫一扫即可捐赠" />
+            </a>
+            <p className="support-qr-hint">用微信「扫一扫」→ 在腾讯公益完成捐赠</p>
+          </>
+        ) : (
+          <div className="support-placeholder support-placeholder-sm">
+            <QrCode size={44} strokeWidth={1.2} />
+            <p>公益项目入口即将上线，感谢你的耐心。</p>
+          </div>
+        )}
+      </section>
 
       <p className="colophon">
         <Heart size={14} /> 谢谢你让这份词库继续生长。

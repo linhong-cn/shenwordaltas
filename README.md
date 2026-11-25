@@ -47,6 +47,7 @@
 7. **去除上游考试相关表述**：应用文案、词条说明与语音中的相关措辞已替换为「深圳小学英语」，代码中的类名/注释也一并中性化；`CONTENT_LICENSE.md` 的法律声明按许可要求保留原文。
 8. **绘本相册**：新增 `#/books` 页面，按年级、上/下册、单元翻看一词一画卡片；六个年级共 1,880 张卡片图片另存于 `../深词光绘本图片/`，每张右下角标注本项目仓库来源。相册页卡片由词库插画实时绘制，不额外增加 App 体积。
 9. **打赏支持**：新增 `#/support` 页面，展示微信赞赏码（静态图片，不接支付 SDK、无需后端）；赞赏完全自愿，不解锁任何功能。二维码图片放在 `public/support/wechat-reward.jpg`，未放置时页面显示「即将上线」占位。微信赞赏码须由收款人本人实名认证并绑定中国大陆银行卡后开通，单笔上限 200 元，仅限个人非商业性赞赏；如将来提交 App Store，需按审核指南 3.1.1 移除外部打赏入口或改走应用内购买。
+10. **公益双入口**：打赏页把「支持开发者」与「直接支持公益」做成两个互不挂钩的入口。赞赏码仍是对作者的个人赠与；公益入口通过腾讯公益项目/「一起捐」链接或二维码，让善款直接进入平台上具有公开募捐资格的慈善组织，应用不代收、不经手、也不从赞赏金额中抽成。配置见 5.8。
 
 词表与素材的原始汇总资料（词表 Markdown、图片、音频、匹配报告）位于同级上级目录 `../小学六年级英语单词/`。
 
@@ -136,7 +137,7 @@ npm install
 
 - 新增或替换某年级素材时，保持 `public/atlas/gN/` 下的目录结构与 `index.json` 的 `count`、`illustrated`、`voiced`、`chunk`、`words` 一致；`entries/` 按 `chunk`（100）分片命名 `{n}.json`。
 - 媒体文件以词条 `id` 命名；缺失插画或音频时应用会自动留空，不必放占位文件。
-- **改过任何静态资源后，把 `public/sw.js` 的 `VERSION` 升一级**（当前 `atlas-g1to6-v6`）。Service Worker 对音效等资源是缓存优先的，不升版本时已安装 PWA 仍会拿旧文件；JS/CSS 因构建带内容哈希可例外，但按统一约定仍建议升级。
+- **改过任何静态资源后，把 `public/sw.js` 的 `VERSION` 升一级**（当前 `atlas-g1to6-v7`）。Service Worker 对音效等资源是缓存优先的，不升版本时已安装 PWA 仍会拿旧文件；JS/CSS 因构建带内容哈希可例外，但按统一约定仍建议升级。
 - 词条说明里的中性措辞为「参考词库词条」「未匹配到词库插画」，不要再写回上游品牌名。
 
 ### 5.5 iOS 工程
@@ -150,7 +151,7 @@ npm install
 
 - **当前分享链接**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK>（含访问码，请勿公开转发）。
 - **绘本相册直达链接**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/books>（进入后选年级、册别、单元即可翻页）。可带参数定位到具体卡片，例如 `#/books?grade=6&part=下&unit=2&index=0`。注意 `sharecode` 是站点访问码，必须保留在 query 中；`#/books` 及其参数是应用内部路由。
-- **打赏支持页**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/support>。入口在「关于」页和页脚；展示 `public/support/wechat-reward.jpg`，图片不存在时显示占位，需自行开通微信赞赏码并把图片放入该路径后重新构建发布。
+- **打赏支持页**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/support>。入口在「关于」页和页脚；展示 `public/support/wechat-reward.jpg`（微信赞赏码）与独立的公益入口，图片/链接未配置时各自显示占位。配置方法见 5.8。
 - **发布源目录与项目构建产物是分开的**：线上应用绑定在 `/Users/hong/WorkBuddy/sz-grade-atlas-workspace/dist`，不是项目的 `dist/`。每次 `npm run build` 后需先同步，再从该目录发布：
 
   ```bash
@@ -170,6 +171,13 @@ npm install
 - 应用内 GitHub 链接由 `src/config.ts` 的 `REPO_URL` 控制；`UPSTREAM_REPO_URL` 是上游 Word Atlas 的署名链接，**不要混用或删除**（CC BY 4.0 要求）。`package.json` 的 `homepage` / `repository` / `bugs` 也指向本项目仓库。
 - 日常提交：`git add -A && git commit -m "…" && git push`（`main` 已跟踪 `origin/main`）。
 - 克隆后需自行生成构建产物：`npm ci && npm run build`；`dist/`、`ios/App/App/public/` 均为可再生产物，未入库。
+
+### 5.8 打赏页与公益入口配置
+
+- **赞赏码**：把微信「赞赏码」保存的图片放到 `public/support/wechat-reward.jpg`（当前为 1152×1152 JPEG）。
+- **公益入口**：二选一，在 `src/config.ts` 填 `CHARITY_URL`（腾讯公益项目或「一起捐」链接），或把公益二维码放到 `public/support/charity-qr.jpg`。两者都没有时页面显示「公益项目入口即将上线」占位。`CHARITY_LABEL` / `CHARITY_DESC` 可改文案。
+- **合规边界**：依据《中华人民共和国慈善法》（2023 修正，2024-09-05 施行）第 22、26、27、37、113 条，只有取得公开募捐资格的慈善组织可以面向社会公众募捐；个人不得自行收款募捐，互联网公开募捐须在民政部指定平台进行；承诺把部分所得用于慈善需事前签书面捐赠协议、事后履行并公开。因此本页**不把用户赞赏金额与公益比例挂钩、不宣称代收善款、不以公益名义诱导打赏**；公益入口让用户直接捐给腾讯公益平台上的持证慈善组织，善款不经作者账户。改文案时务必保留这条边界。
+- 每次替换图片或修改 `src/config.ts` 后需重新构建、升 `sw.js` 版本并发布。
 
 ## 六、已知限制与免责
 

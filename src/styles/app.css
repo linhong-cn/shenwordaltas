@@ -4347,3 +4347,19 @@ a:hover .mark-needle,
 @media (max-width: 719px) {
   .support-grid { grid-template-columns: 1fr; }
 }
+
+/* 打赏页 — 独立公益入口 */
+.support-charity { margin-top: 16px; text-align: center; }
+.support-charity-head {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  color: var(--sage-ink); margin-bottom: 10px;
+}
+.support-charity-head h3 { margin: 0; font: 600 19px var(--serif); color: var(--ink); }
+.support-charity > .muted { max-width: 660px; margin: 0 auto 16px; line-height: 1.7; }
+.support-charity-qr {
+  display: block; width: min(100%, 260px); margin: 0 auto;
+  border: 1px solid var(--line); border-radius: var(--r);
+  overflow: hidden; background: #fff; box-shadow: var(--shadow-sm);
+}
+.support-charity-qr img { display: block; width: 100%; height: auto; }
+.support-placeholder-sm { min-height: 150px; }
