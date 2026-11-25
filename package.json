@@ -3,6 +3,14 @@
   "version": "2.0.0",
   "type": "module",
   "description": "Illustrated English vocabulary atlas for Shenzhen primaries, grades 1-6 (default 6), with UK/US audio, examples and spaced repetition.",
+  "homepage": "https://github.com/linhong-cn/shenwordaltas#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linhong-cn/shenwordaltas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/linhong-cn/shenwordaltas/issues"
+  },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",

@@ -4,7 +4,8 @@
 
 **本项目是基于开源项目 [Word Atlas](https://github.com/designfuchen/word-atlas) 修改而来的衍生应用。** 页面结构、样式、FSRS 间隔复习算法与配套素材来自上游；词表、年级划分、品牌文案、启动页语音和多年级支持为本项目改编与新增。
 
-- 上游仓库：<https://github.com/designfuchen/word-atlas>
+- **本项目仓库**：<https://github.com/linhong-cn/shenwordaltas>（Public，分支 `main`；应用内 GitHub 入口也指向这里）
+- 上游仓库：<https://github.com/designfuchen/word-atlas>（素材来源，署名链接按 CC BY 4.0 保留）
 - 上游在线版：<https://0xlei.tech/words/>
 - 当前应用：React + Vite + TypeScript，纯静态 PWA，可打包为 Capacitor iOS 工程
 
@@ -151,6 +152,13 @@ npm install
 - **域名机制**：域名在应用**首次创建**时按 `domainPrefix` 分配，之后绑定在 sandbox 上；覆盖发布、换发布目录、单纯下线重发都不会改域名。本次成功换域名的做法是：先停止发布旧应用 → 临时移开工作区内的 `.*.genie` 与 `.workbuddy/applications.yaml` → 用全新目录作为发布源重新发布，平台才走「首次创建」流程，分配 `sz-grade-atlas` 与新访问码。
 - 每次发布后建议核对：首页标题、`assets/index-*.js` 哈希、`atlas/g1..g6/index.json` 返回 `application/json`、`sw.js` 版本与 `sfx/splash-voice.mp3`。
 - 在「设置—数据管理—应用」中停止发布后，链接会返回 404「链接已失效」，重新发布即可恢复，地址与访问码不变。
+
+### 5.7 源码仓库与提交
+
+- 远端：`origin = git@github.com:linhong-cn/shenwordaltas.git`，公开仓库 <https://github.com/linhong-cn/shenwordaltas>。
+- 应用内 GitHub 链接由 `src/config.ts` 的 `REPO_URL` 控制；`UPSTREAM_REPO_URL` 是上游 Word Atlas 的署名链接，**不要混用或删除**（CC BY 4.0 要求）。`package.json` 的 `homepage` / `repository` / `bugs` 也指向本项目仓库。
+- 日常提交：`git add -A && git commit -m "…" && git push`（`main` 已跟踪 `origin/main`）。
+- 克隆后需自行生成构建产物：`npm ci && npm run build`；`dist/`、`ios/App/App/public/` 均为可再生产物，未入库。
 
 ## 六、已知限制与免责
 
