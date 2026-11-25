@@ -105,7 +105,7 @@ shenwordaltas/
 Node.js 20+（开发机为 v22.22.2 / npm 10.9.7）。无需数据库、无需服务端。
 
 ```bash
-cd /Users/hong/WorkBuddy/shenwordaltas
+cd /Users/XXXX/shenwordaltas
 npm install
 ```
 
@@ -145,7 +145,7 @@ npm install
 
 - 工程：`ios/App/App.xcodeproj`（Capacitor 8，SPM 依赖，无绝对路径引用，可整目录搬迁）。
 - Bundle ID 保持 `com.hong.grade6atlas`，**不要改**，否则已安装设备上的学习进度会丢失。
-- 交付压缩包：`/Users/hong/WorkBuddy/shenwordaltas-ios.zip`（约 209 MB，内含六个年级资源）。
+- 交付压缩包：`/Users/XXXX/shenwordaltas-ios.zip`（约 209 MB，内含六个年级资源）。
 - **限制**：交付物是 Xcode 工程包，不是可直接安装的 IPA。开发环境只有 Command Line Tools，没有完整 Xcode 与 iOS SDK；需在装有 Xcode 的 Mac 上打开工程 Archive 签名后安装。
 
 ### 5.6 线上 PWA
@@ -153,10 +153,10 @@ npm install
 - **当前分享链接**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK>（含访问码，请勿公开转发）。
 - **绘本相册直达链接**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/books>（进入后选年级、册别、单元即可翻页）。可带参数定位到具体卡片，例如 `#/books?grade=6&part=下&unit=2&index=0`。注意 `sharecode` 是站点访问码，必须保留在 query 中；`#/books` 及其参数是应用内部路由。
 - **打赏支持页**：<https://sz-grade-atlas.app.workbuddy.host/?sharecode=2D3VMYQIBK#/support>。入口在「关于」页和页脚；展示 `public/support/wechat-reward.jpg`（微信赞赏码）与独立的公益入口，图片/链接未配置时各自显示占位。配置方法见 5.8。
-- **发布源目录与项目构建产物是分开的**：线上应用绑定在 `/Users/hong/WorkBuddy/sz-grade-atlas-workspace/dist`，不是项目的 `dist/`。每次 `npm run build` 后需先同步，再从该目录发布：
+- **发布源目录与项目构建产物是分开的**：线上应用绑定在 `/Users/XXXX/sz-grade-atlas-workspace/dist`，不是项目的 `dist/`。每次 `npm run build` 后需先同步，再从该目录发布：
 
   ```bash
-  cd /Users/hong/WorkBuddy/shenwordaltas
+  cd /Users/XXXX/shenwordaltas
   rsync -a dist/ ../sz-grade-atlas-workspace/dist/   # 不带 --delete，避免触发批量删除保护
   ```
 
