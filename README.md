@@ -127,7 +127,7 @@ npm install
 
 - 新增或替换某年级素材时，保持 `public/atlas/gN/` 下的目录结构与 `index.json` 的 `count`、`illustrated`、`voiced`、`chunk`、`words` 一致；`entries/` 按 `chunk`（100）分片命名 `{n}.json`。
 - 媒体文件以词条 `id` 命名；缺失插画或音频时应用会自动留空，不必放占位文件。
-- **改过任何静态资源后，把 `public/sw.js` 的 `VERSION` 升一级**（当前 `atlas-g1to6-v3`）。Service Worker 对音效等资源是缓存优先的，不升版本时已安装 PWA 仍会拿旧文件。
+- **改过任何静态资源后，把 `public/sw.js` 的 `VERSION` 升一级**（当前 `atlas-g1to6-v4`）。Service Worker 对音效等资源是缓存优先的，不升版本时已安装 PWA 仍会拿旧文件；JS/CSS 因构建带内容哈希可例外，但按统一约定仍建议升级。
 - 词条说明里的中性措辞为「参考词库词条」「未匹配到词库插画」，不要再写回上游品牌名。
 
 ### 5.5 iOS 工程
