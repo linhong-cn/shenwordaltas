@@ -1,6 +1,6 @@
 import type { Atlas, Entry } from "../atlas/types";
 import { store } from "../store/store";
-import { GRADE_LABELS } from "../grades";
+import { GRADE_LABELS, type Grade } from "../grades";
 import { toast } from "./Toast";
 
 const SERIF = '"Fraunces Variable", "Songti SC", "Noto Serif SC", Georgia, serif';
@@ -40,7 +40,7 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath();
 }
 
-export async function renderWordCard(atlas: Atlas, e: Entry) {
+export async function renderWordCard(atlas: Atlas, e: Entry, grade?: Grade) {
   const W = 1080;
   const H = 1440;
   const c = document.createElement("canvas");
@@ -53,15 +53,15 @@ export async function renderWordCard(atlas: Atlas, e: Entry) {
   ctx.fillRect(0, 0, W, H);
   const pad = 72;
   const art = W - pad * 2;
-  const src = atlas.img(e);
+  const imgSrc = atlas.img(e);
   ctx.save();
   roundRect(ctx, pad, pad, art, art * 0.78, 36);
   ctx.clip();
   ctx.fillStyle = "#EAE1D0";
   ctx.fillRect(pad, pad, art, art * 0.78);
-  if (src) {
+  if (imgSrc) {
     try {
-      const img = await loadImage(src);
+      const img = await loadImage(imgSrc);
       const crop = img.width * 0.78;
       ctx.drawImage(img, 0, (img.height - crop) / 2, img.width, crop, pad, pad, art, art * 0.78);
     } catch {
@@ -75,7 +75,7 @@ export async function renderWordCard(atlas: Atlas, e: Entry) {
   ctx.font = `600 ${e.w.length > 12 ? 92 : 120}px ${SERIF}`;
   ctx.fillText(e.w, pad, y);
   y += 62;
-  ctx.font = `400 34px ${SANS}`;
+  ctx.font = `400 34px "Arial Unicode MS", "Lucida Grande", "Times New Roman", serif`;
   ctx.fillStyle = "#6B6F80";
   ctx.fillText([e.uk && `英 ${e.uk}`, e.us && e.us !== e.uk && `美 ${e.us}`].filter(Boolean).join("    "), pad, y);
   y += 72;
@@ -105,14 +105,18 @@ export async function renderWordCard(atlas: Atlas, e: Entry) {
     }
   }
   ctx.fillStyle = "rgba(30,38,64,.14)";
-  ctx.fillRect(pad, H - 120, art, 2);
+  ctx.fillRect(pad, H - 148, art, 2);
   ctx.fillStyle = "#1E2640";
   ctx.font = `600 34px ${SERIF}`;
-  ctx.fillText(`深词光 · ${GRADE_LABELS[store.get().settings.grade]}`, pad, H - 62);
+  ctx.fillText(`深词光 · ${GRADE_LABELS[grade ?? store.get().settings.grade]}`, pad, H - 96);
   ctx.font = `400 26px ${SANS}`;
   ctx.fillStyle = "#7A7C88";
   const tag = "一词一画，快乐背词";
-  ctx.fillText(tag, W - pad - ctx.measureText(tag).width, H - 64);
+  ctx.fillText(tag, W - pad - ctx.measureText(tag).width, H - 96);
+  ctx.font = `400 22px ${SANS}`;
+  ctx.fillStyle = "#8A8D98";
+  const src = "源: https://github.com/linhong-cn/shenwordaltas";
+  ctx.fillText(src, W - pad - ctx.measureText(src).width, H - 50);
   return c;
 }
 

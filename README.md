@@ -2,6 +2,8 @@
 
 > 一词一画，快乐背词 —— 深圳小学 1–6 年级英语词库（默认六年级）
 
+给深圳小朋友定制，也是给家里小朋友日常使用的应用。
+
 **本项目是基于开源项目 [Word Atlas](https://github.com/designfuchen/word-atlas) 修改而来的衍生应用。** 页面结构、样式、FSRS 间隔复习算法与配套素材来自上游；词表、年级划分、品牌文案、启动页语音和多年级支持为本项目改编与新增。
 
 - **本项目仓库**：<https://github.com/linhong-cn/shenwordaltas>（Public，分支 `main`；应用内 GitHub 入口也指向这里）

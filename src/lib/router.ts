@@ -6,6 +6,7 @@ export type Route =
   | { page: "atlas"; topic?: string; level?: string; q?: string; view?: string }
   | { page: "learn" }
   | { page: "practice" }
+  | { page: "books"; grade?: number; part?: string; unit?: number; index?: number }
   | { page: "me" }
   | { page: "about" };
 
@@ -25,6 +26,14 @@ function parse(hash: string): Location {
     route = { page: "atlas", topic: params.get("topic") || undefined, level: params.get("level") || undefined, q: params.get("q") || undefined, view: params.get("view") || undefined };
   else if (seg[0] === "learn") route = { page: "learn" };
   else if (seg[0] === "practice") route = { page: "practice" };
+  else if (seg[0] === "books")
+    route = {
+      page: "books",
+      grade: params.has("grade") ? Number(params.get("grade")) : undefined,
+      part: params.get("part") || undefined,
+      unit: params.has("unit") ? Number(params.get("unit")) : undefined,
+      index: params.has("index") ? Number(params.get("index")) : undefined,
+    };
   else if (seg[0] === "me") route = { page: "me" };
   else if (seg[0] === "about") route = { page: "about" };
   else if (seg[0] === "w" && seg[1]) return { route: { page: "atlas" }, word: decodeURIComponent(seg[1]) };
@@ -38,6 +47,12 @@ export function href(route: Route, word?: string | null) {
     if (route.level) params.set("level", route.level);
     if (route.q) params.set("q", route.q);
     if (route.view) params.set("view", route.view);
+  }
+  if (route.page === "books") {
+    if (route.grade) params.set("grade", String(route.grade));
+    if (route.part) params.set("part", route.part);
+    if (route.unit) params.set("unit", String(route.unit));
+    if (route.index) params.set("index", String(route.index));
   }
   if (word) params.set("w", word);
   const q = params.toString();
