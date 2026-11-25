@@ -1,0 +1,9 @@
+{
+	"appId": "com.hong.grade6atlas",
+	"appName": "深词光",
+	"webDir": "dist",
+	"server": {
+		"iosScheme": "http"
+	},
+	"packageClassList": []
+}

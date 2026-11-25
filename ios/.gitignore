@@ -9,5 +9,5 @@ xcuserdata
 capacitor-cordova-ios-plugins
 
 # Generated Config files
-App/App/capacitor.config.json
-App/App/config.xml
+# 注：App/App/capacitor.config.json 与 config.xml 虽由 Capacitor 生成，
+# 但本项目已定制 appName「深词光」并刻意保留 bundle id，故纳入版本控制，不在此忽略。
